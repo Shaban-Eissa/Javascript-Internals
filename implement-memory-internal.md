@@ -8,8 +8,6 @@ Key Concepts :
 * Memory Allocation - Memory is allocated when variables, objects, or functions are created. 
 * Garbage Collection - The process of automatically finding and freeing memory that is no longer in use.
 
-<br />
-
 The documentation covers:
 
 * Memory allocation for different types of variables.
