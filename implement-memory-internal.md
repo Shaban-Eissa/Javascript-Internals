@@ -1294,6 +1294,6 @@ Thanks for reading!
 
 #
 
-### Refernces 
+### References 
 
 [Preventing and Debugging Memory Leaks in Node.js](https://betterstack.com/community/guides/scaling-nodejs/high-performance-nodejs/nodejs-memory-leaks/)
