@@ -1,6 +1,14 @@
 # Memory Management Under The Hood
 
 Memory management is a crucial aspect of JavaScript, especially in Node.js where efficient memory use is essential for performance. This documentation demonstrates how to manually manage memory in Node.js, including allocation, usage, and garbage collection. JavaScript uses automatic memory management with a built-in garbage collector. The main goal is to reclaim memory occupied by objects that are no longer reachable or needed by the program.
+<br />
+
+Key Concepts : 
+
+* Memory Allocation - Memory is allocated when variables, objects, or functions are created. 
+* Garbage Collection - The process of automatically finding and freeing memory that is no longer in use.
+
+<br />
 
 The documentation covers:
 
@@ -9,13 +17,6 @@ The documentation covers:
 * Manual garbage collection in Node.js using `global.gc()`.
 * Preventing and debugging memory leaks.
 * Simulation and monitoring the usage of memory in production.
-
-
-### Key Concepts
-
-1. **Memory Allocation**: Memory is allocated when variables, objects, or functions are created. 
-   
-2. **Garbage Collection**: The process of automatically finding and freeing memory that is no longer in use.
 
 
 Understanding How Memory Is Working Behind The Scenes
