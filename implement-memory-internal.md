@@ -77,6 +77,36 @@ We can visualize them as follows:
 
 In this example, the variable names are stored on the stack, but the values they reference are placed on the heap instead.
 
+### Quick Outline On Memory Storage
+
+* Fixed-size primitives (Number, Boolean, Null, Undefined, Symbol) are generally stored on the stack.
+* Strings, depending on their length, can be stored on either the stack (if short) or the heap (if long).
+* Object references are stored on the stack, while the actual objects are stored on the heap.
+
+
+#### Storage Context :
+    
+  * **Stack Storage**:
+        1- Small, fixed-size primitives like `Number`, `Boolean`, `Null`, `Undefined`, and `Symbol` are generally stored on the stack.
+        <br /> 
+        2- Short strings may sometimes be stored on the stack, depending on the JavaScript engine's optimizations.
+  * **Heap Storage**:
+        <br /> 
+        1- Longer strings are stored in the heap due to their variable size, with references to these strings stored on the stack.
+        <br /> 
+        2- Objects and complex structures are stored on the heap, with references to them stored on the stack.
+       
+#### Examples :
+  
+  ```js
+    let num = 42; (Number stored on the stack)
+    let isTrue = true; (Boolean stored on the stack)
+    let shortStr = "Hi"; (Short string possibly stored on the stack)
+    let longStr = "This is a long string that will be stored in the heap."; (Long string stored in the heap)
+    let empty = null; and `let notDefined;` (Null and Undefined stored on the stack)
+  ```  
+
+
 Understanding How JavaScript Objects Hold Memory
 ------------------------------------------------
 
