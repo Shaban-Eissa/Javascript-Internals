@@ -628,7 +628,7 @@ Once you have such auto restart strategy in place, you can focus on debugging an
 Debugging Node.js Memory Leaks
 ------------------------------
 
-In this section, you will learn how to debug the application to identify the memory leak source and fix it permanently. Starting with Node.js v11.13.0 or higher, you can use `writeHeapSnapshot()` method of the [`v8`](https://nodejs.org/api/v8.html)  module to take a heap snapshot as your application is running. If you are using a Node.js version lower than v11.13, use the [heapdump](https://www.npmjs.com/package/heapdump)  package instead or [v8-profiler-next] (https://www.npmjs.com/package/v8-profiler-next).
+In this section, you will learn how to debug the application to identify the memory leak source and fix it permanently. Starting with Node.js v11.13.0 or higher, you can use `writeHeapSnapshot()` method of the [`v8`](https://nodejs.org/api/v8.html)  module to take a heap snapshot as your application is running. If you are using a Node.js version lower than v11.13, use the [heapdump](https://www.npmjs.com/package/heapdump)  package instead.
 
 Once the snapshots have been taken, you can load them in the Chrome DevTools. The DevTools have a memory panel that allows you to load heap snapshots, compare them, and give you a summary of the memory usage.
 
@@ -649,55 +649,74 @@ Once the dependencies are installed, open a new `captureHeapSnapshot.js` file in
 
 ```js
 const http = require("http");
+const express = require("express");
 const v8Profiler = require("v8-profiler-next");
 const fs = require("fs");
 
-// Function to capture heap snapshot with a unique filename
+const app = express();
+const PORT = 3000;
+const headersArray = [];
+
+// Function to capture heap snapshot
 const captureHeapSnapshot = (label) => {
-  const timestamp = new Date().toISOString().replace(/:/g, "-"); // Generate a unique timestamp
-  const snapshot = v8Profiler.takeSnapshot(`${label}-${timestamp}`);
+  const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+  const snapshot = v8Profiler.takeSnapshot(
+    `heapSnapshot-${label}-${timestamp}`
+  );
   snapshot
     .export()
-    .pipe(fs.createWriteStream(`${label}-${timestamp}.heapsnapshot`))
+    .pipe(
+      fs.createWriteStream(`heapSnapshot-${label}-${timestamp}.heapsnapshot`)
+    )
     .on("finish", () => {
       snapshot.delete();
       console.log(
-        `Heap snapshot captured successfully: ${label}-${timestamp}.heapsnapshot`
+        `Heap snapshot captured successfully: heapSnapshot-${label}-${timestamp}.heapsnapshot`
       );
     });
 };
 
-// Function to start the server and capture heap snapshots
+// Route to collect headers
+app.get("/", (req, res) => {
+  headersArray.push({ userAgentUsed: req.get("User-Agent") });
+  res.status(200).send(JSON.stringify(headersArray));
+});
+
+// Start the server and capture snapshots
 const startServerAndCaptureSnapshots = () => {
-  const server = http.createServer((req, res) => {
-    res.writeHead(200, { "Content-Type": "text/plain" });
-    res.end("Hello World\n");
+  const server = app.listen(PORT, () => {
+    console.log(`Server started at http://localhost:${PORT}/`);
+
+    // Capture the first heap snapshot after 1 second
+    setTimeout(() => captureHeapSnapshot("first"), 1000);
+
+    // Capture the second heap snapshot after 10 seconds
+    setTimeout(() => captureHeapSnapshot("second"), 10000);
   });
 
-  server.listen(3000, () => {
-    console.log("Server started at http://localhost:3000/");
-    // Capture initial heap snapshot after 1 second
-    setTimeout(() => captureHeapSnapshot("heapSnapshot-initial"), 1000);
-
-    // Capture second heap snapshot after a delay (e.g., 10 seconds for demonstration)
-    setTimeout(() => captureHeapSnapshot("heapSnapshot-second"), 11000);
+  server.on("error", (err) => {
+    if (err.code === "EADDRINUSE") {
+      console.log("Server is already running on port 3000.");
+      captureHeapSnapshot("first");
+      setTimeout(() => captureHeapSnapshot("second"), 10000);
+    } else {
+      console.error("Server error:", err);
+    }
   });
 };
 
 // Check if the server is already running on port 3000
-const serverStatusCheck = http.get("http://localhost:3000", (res) => {
-  // Server is already running, capture initial heap snapshot
+const serverStatusCheck = http.get(`http://localhost:${PORT}`, (res) => {
+  // Server is already running, capture heap snapshots directly
   console.log("Server is already running on port 3000.");
-  captureHeapSnapshot("heapSnapshot-initial");
-
-  // Capture second heap snapshot after a delay (e.g., 10 seconds for demonstration)
-  setTimeout(() => captureHeapSnapshot("heapSnapshot-second"), 10000);
+  captureHeapSnapshot("first");
+  setTimeout(() => captureHeapSnapshot("second"), 10000);
 });
 
 // Handle connection errors (e.g., server not running)
 serverStatusCheck.on("error", (err) => {
   if (err.code === "ECONNREFUSED") {
-    // Server is not running, start the server and capture snapshots
+    // Server is not running, start the server
     startServerAndCaptureSnapshots();
   } else {
     console.error("Error checking server status:", err);
