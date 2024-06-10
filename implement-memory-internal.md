@@ -72,6 +72,7 @@ const interests = ["bikes", "motorcycles"];
 
 
 We can visualize them as follows:
+<br />
 <img src="https://imagedelivery.net/xZXo0QFi-1_4Zimer-T0XQ/1011d40e-8d25-4f19-59c3-df78de437100/lg1x" />
 
 In this example, the variable names are stored on the stack, but the values they reference are placed on the heap instead.
