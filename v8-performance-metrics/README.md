@@ -2,7 +2,7 @@
 
 <img src="https://images.ponyfoo.com/uploads/addy-ad3b2ea8f9be48a18c4bdad5041a3237.png" />
 
-Every browser has a JavaScript engine. The most popular engine is Google’s V8 engine. This engine is the engine of Google Chrome and also of Node.js. Of course, all other browsers have their own JavaScript engines. The JavaScript engine executes and compiles JavaScript into native machine code. Every major browser has developed its own JS engine: Google's Chrome uses V8, Safari uses JavaScriptCore, and Firefox  uses  SpiderMonkey. A JavaScript engine will always consist of a Call Stack and a Memory Heap and will run on one thread but the JavaScript engine itself runs in several threads (processes) that do different things: compressor for example, garbage collection, etc.
+Every browser has a JavaScript engine. The most popular engine is Google’s V8 engine. This engine is the engine of Google Chrome and also of Node.js. Of course, all other browsers have their own JavaScript engines. The JavaScript engine executes and compiles JavaScript into native machine code. Every major browser has developed its own JS engine: Google's Chrome uses V8, Safari uses JavaScriptCore, and Firefox  uses  SpiderMonkey. A JavaScript engine will always consist of a Call Stack and a Memory Heap and will run on one thread but the JavaScript engine itself runs in several threads (processes).
 
 
 V8 overview
@@ -32,7 +32,6 @@ V8 JavaScript Engine
 * **V8's Dual Parsing Strategy**:
     * Full Parser: Generates AST and scopes, used for frequently executed code.
     * Pre-Parser: A faster, lightweight parser that skips over infrequently used code during initial load.
-    * Example scenarios demonstrate how V8's heuristics decide whether to fully parse or pre-parse functions.
 
 
 V8 Compilation Process
@@ -42,7 +41,7 @@ When V8 compiles JavaScript code, the parser generates an abstract syntax tree. 
 
 <img src="https://miro.medium.com/v2/resize:fit:720/format:webp/1*ZIH_wjqDfZn6NRKsDi9mvA.png" />
 
-As we can see from the above image, the JavaScript source code is fed to the parser. The parser generates an AST. Ignition generates bytecode, and TurboFan produces optimized machine code. Don’t worry about the red and green arrows as of now. They will make sense once we get to the working of Ignition and TurboFan.
+As we can see from the above image, the JavaScript source code is fed to the parser. The parser generates an AST. Ignition generates bytecode, and TurboFan produces optimized machine code. 
 
 How Are JavaScript Engines Different from the Engines of Other Programming Languages?
 -------------------------------------------------------------------------------------
@@ -152,7 +151,7 @@ From a high-level view, the V8 JavaScript engine execution consists of 5 steps.
 5.  Optimize some bytecodes for better performance
 
 ### 1\. Initialize environment
--------------------------------
+
 
 Technically, this is not part of V8’s job. It is the renderer process of the browser initializes the following two items:
 
@@ -163,7 +162,7 @@ Technically, this is not part of V8’s job. It is the renderer process of the b
 
 A browser has multiple renderer processes. Usually, each browser tab has a renderer process and initializes a V8 instance.
 
-What is the host environment? In our context, it is the browser. Therefore, we will use the “browser” and the “host environment” interchangeably in this documentation. However, keep in mind that a browser is merely one of the host environments for JavaScript. Another one is the Node host environment.
+What is the host environment? In our context, it is the browser. Therefore, we will use the “browser”. However, keep in mind that a browser is merely one of the host environments for JavaScript. Another one is the Node host environment.
 
 #### 1\.1\. What is in the host environment?
 
@@ -186,7 +185,7 @@ Why does the browser store data in two different places?
 
 
 #### 1\.2\. JS Engine (V8) relies on and empowers the host environment
-----------------------------------------------------------------------
+
 
 The host environment to V8 is like your computer’s operating system to software. Softwares rely on the operating system to run. Meanwhile, they empower your system to do so many advanced tasks.
 
@@ -270,7 +269,8 @@ So far the basics, time to look at the bytecode for an actual function.
 ```js
 function incrementX(obj) {
   return 1 + obj.x;
-}incrementX({x: 42});  // V8’s compiler is lazy, if you don’t run a function, it won’t interpret it.
+}
+incrementX({x: 42});  // V8’s compiler is lazy, if you don’t run a function, it won’t interpret it.
 ```
 
 
@@ -300,21 +300,18 @@ Handler Table (size = 16)
 We can ignore most of the output and focus on the actual bytecodes. Here is what each bytecode means, line by line.
 
 #### LdaSmi \[1\]
-------------
 
 `LdaSmi [1]` loads the constant value `1` in the accumulator.
 
 <img src="https://miro.medium.com/v2/resize:fit:622/format:webp/1*WIECS2Gd701BnheqXrWbag.png" />
 
 #### Star r0
--------
 
 Next, `Star r0` stores the value that is currently in the accumulator, `1,` in the register `r0`.
 
 <img src="https://miro.medium.com/v2/resize:fit:622/format:webp/1*271aYN7VC6ltaleyDfwhXg.png" />
 
 #### LdaNamedProperty a0, [0], [4]
--------------------------------
 
 `LdaNamedProperty` loads a named property of `a0` into the accumulator. `ai` refers to the i-th argument of `incrementX()`. In this example, we look up a named property on `a0`, the first argument of `incrementX()`. The name is determined by the constant `0`. `LdaNamedProperty` uses `0` to look up the name in a separate table:
 
@@ -334,14 +331,12 @@ Now the registers look like this:
 <img src="https://miro.medium.com/v2/resize:fit:622/format:webp/1*sGFN376VKgf2hWXctBqZnw.png" />
 
 #### Add r0, \[6\]
--------------
 
 The last instruction adds `r0` to the accumulator, resulting in`43`. `6` is another index of the feedback vector.
 
 <img src="https://miro.medium.com/v2/resize:fit:622/format:webp/1*LAHuYIvZaXX8jH_STNHfmQ.png" />
 
 #### Return
-------
 
 `Return` returns the value in the accumulator. That is the end of the function `incrementX()`. The caller of `incrementX()` starts off with `43` in the accumulator and can further work with this value.
 
