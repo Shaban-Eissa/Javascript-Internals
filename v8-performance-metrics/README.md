@@ -248,7 +248,6 @@ At this step, the V8 engine takes the AST and scopes and outputs bytecodes.
 
 
 #### Understanding V8’s Bytecode
---------------------------------
 
 How Ignition Generates Bytecode - Bytecodes are considered small building blocks that can be composed together to build a JavaScript functionality. They abstract the low-level details of machine code. V8 has several hundred bytecodes. There are bytecodes for operators like `Add` or `TypeOf`, or for property loads like `LdaNamedProperty`. V8 also has some pretty specific bytecodes like `CreateObjectLiteral` or `SuspendGenerator`. The header file [bytecodes.h](https://github.com/v8/v8/blob/master/src/interpreter/bytecodes.h) defines the complete list of V8’s bytecodes.
 
