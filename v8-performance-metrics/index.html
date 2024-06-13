@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Performance Metrics</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <h2>Execution and Bytecode Time</h2>
+    <canvas id="executionBytecodeChart" width="300" height="90"></canvas>
+
+    <h2>Heap Memory Usage</h2>
+    <canvas id="heapMemoryChart" width="300" height="90"></canvas>
+
+    <h2>Garbage Collection Time</h2>
+    <canvas id="garbageCollectionChart" width="300" height="90"></canvas>
+
+    <h2>Optimized vs. Deoptimized Functions</h2>
+    <canvas id="optimizationChart" width="300" height="90"></canvas>
+
+    <script>
+      async function fetchData() {
+        const response = await fetch("/data/performance_metrics.csv");
+        const data = await response.text();
+        const rows = data.split("\n").slice(1);
+        const labels = [];
+        const executionTimes = [];
+        const bytecodeTimes = [];
+        const heapUsed = [];
+        const heapTotal = [];
+        const optimizedFunctions = [];
+        const deoptimizedFunctions = [];
+        const garbageCollectionTimes = [];
+
+        rows.forEach((row) => {
+          const cols = row.split(",");
+          labels.push(cols[0]);
+          executionTimes.push(parseFloat(cols[1]));
+          bytecodeTimes.push(parseFloat(cols[2]));
+          heapUsed.push(parseFloat(cols[3]));
+          heapTotal.push(parseFloat(cols[4]));
+          optimizedFunctions.push(parseInt(cols[5]));
+          deoptimizedFunctions.push(parseInt(cols[6]));
+          garbageCollectionTimes.push(parseFloat(cols[7]));
+        });
+
+        return {
+          labels,
+          executionTimes,
+          bytecodeTimes,
+          heapUsed,
+          heapTotal,
+          optimizedFunctions,
+          deoptimizedFunctions,
+          garbageCollectionTimes,
+        };
+      }
+
+      async function renderCharts() {
+        const {
+          labels,
+          executionTimes,
+          bytecodeTimes,
+          heapUsed,
+          heapTotal,
+          optimizedFunctions,
+          deoptimizedFunctions,
+          garbageCollectionTimes,
+        } = await fetchData();
+
+        const ctx1 = document
+          .getElementById("executionBytecodeChart")
+          .getContext("2d");
+        new Chart(ctx1, {
+          type: "bar",
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: "Execution Time (ms)",
+                data: executionTimes,
+                backgroundColor: "rgba(75, 192, 192, 0.2)",
+                borderColor: "rgba(75, 192, 192, 1)",
+                borderWidth: 1,
+              },
+              {
+                label: "Bytecode Generation Time (ms)",
+                data: bytecodeTimes, // Use bytecode time data
+                backgroundColor: "rgba(153, 102, 255, 0.2)",
+                borderColor: "rgba(153, 102, 255, 1)",
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true,
+              },
+            },
+          },
+        });
+
+        const ctx2 = document
+          .getElementById("heapMemoryChart")
+          .getContext("2d");
+        new Chart(ctx2, {
+          type: "bar",
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: "Heap Used (bytes)",
+                data: heapUsed,
+                backgroundColor: "rgba(255, 206, 86, 0.2)",
+                borderColor: "rgba(255, 206, 86, 1)",
+                borderWidth: 1,
+              },
+              {
+                label: "Heap Total (bytes)",
+                data: heapTotal,
+                backgroundColor: "rgba(54, 162, 235, 0.2)",
+                borderColor: "rgba(54, 162, 235, 1)",
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true,
+              },
+            },
+          },
+        });
+
+        const ctx3 = document
+          .getElementById("garbageCollectionChart")
+          .getContext("2d");
+        new Chart(ctx3, {
+          type: "bar",
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: "Garbage Collection Time (ms)",
+                data: garbageCollectionTimes,
+                backgroundColor: "rgba(255, 99, 132, 0.2)",
+                borderColor: "rgba(255, 99, 132, 1)",
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true,
+              },
+            },
+          },
+        });
+
+        const ctx4 = document
+          .getElementById("optimizationChart")
+          .getContext("2d");
+        new Chart(ctx4, {
+          type: "bar",
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: "Optimized Functions",
+                data: optimizedFunctions,
+                backgroundColor: "rgba(75, 192, 192, 0.2)",
+                borderColor: "rgba(75, 192, 192, 1)",
+                borderWidth: 1,
+              },
+              {
+                label: "Deoptimized Functions",
+                data: deoptimizedFunctions,
+                backgroundColor: "rgba(255, 159, 64, 0.2)",
+                borderColor: "rgba(255, 159, 64, 1)",
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true,
+              },
+            },
+          },
+        });
+      }
+
+      renderCharts();
+    </script>
+  </body>
+</html>

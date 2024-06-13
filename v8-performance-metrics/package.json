@@ -1,0 +1,17 @@
+{
+  "name": "v8-jit-performance-metrics",
+  "version": "1.0.0",
+  "description": "A project to benchmark V8 and JIT performance metrics",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "benchmark": "node scripts/benchmark.js"
+  },
+  "dependencies": {
+    "chart.js": "^3.9.1",
+    "chartjs-node-canvas": "^4.1.6",
+    "express": "^4.17.1",
+    "json2csv": "^5.0.6",
+    "v8": "^0.1.0"
+  }
+}

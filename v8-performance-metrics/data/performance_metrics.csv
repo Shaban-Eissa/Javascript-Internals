@@ -1,0 +1,4 @@
+"file","executionTime","bytecodeTime","heapUsed","heapTotal","optimizedFunctions","deoptimizedFunctions","garbageCollectionTime"
+"simpleLoop.js",230,0,4024224,5652480,11,10,35
+"complexCalculation.js",103,0,4093632,5652480,41,2,24
+"functionCalls.js",98,0,4152336,5652480,86,13,8
